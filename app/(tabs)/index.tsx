@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet, Button } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Button } from 'react-native';
 import React, { useEffect, useState } from 'react'; // Import useEffect and useState
 
 import { HelloWave } from '@/components/HelloWave';
@@ -60,11 +60,8 @@ export default function HomeScreen() {
   const fetchSummary = async () => {
     setIsLoading(true);
     setError(null);
-    // This is the fixed prompt.
-    // You can adjust this to be more specific or to ask about a different topic.
-    // The phrase "drawing on common knowledge typically found through Google searches"
-    // is a hint to the model about the type of information to use.
-    const textToSummarize = "Grounding your answer using google search, what are some important things that have happened in finance in the past 24 hours?. Do not use any styled text in your answer, answer in technical terms, and answer in 200 words. Use some bullet points half way through";
+    // Below is the fixed prompt
+    const textToSummarize = "Using Google Search for grounding, identify key financial events of the past 24 hours and relevant companies. Respond in 200 words, employing clear, understandable technical terms. Include bullet points after the first half of the answer, and do not use italics or bolding.";
     try {
       const result = await getGeminiSummary(textToSummarize);
       setSummary(result);
@@ -83,53 +80,21 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#FFFFFF', dark: '#141414' }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/best-stock-photo.png')}
           style={styles.reactLogo}
+          contentFit="cover"
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">Daily Summary of Recent Financial Events</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Daily Summary of Recent Financial Events</ThemedText>
-        {isLoading && <ThemedText>Loading summary from Gemini...</ThemedText>}
+        {isLoading && <ThemedText>Loading...</ThemedText>}
         {error && <ThemedText style={{ color: 'red' }}>Error: {error}</ThemedText>}
         {summary && <ThemedText>{summary}</ThemedText>}
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -147,7 +112,7 @@ const styles = StyleSheet.create({
   },
   reactLogo: {
     height: 178,
-    width: 290,
+    width: '100%',
     bottom: 0,
     left: 0,
     position: 'absolute',
