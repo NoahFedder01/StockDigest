@@ -1,12 +1,13 @@
 import { Image } from 'expo-image';
-import { Dimensions, Platform, StyleSheet, Button } from 'react-native';
-import React, { useEffect, useState } from 'react'; // Import useEffect and useState
+import { Platform, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
+import { Collapsible } from '@/components/Collapsible';
+import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Collapsible } from '@/components/Collapsible';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import React, { useEffect, useState } from 'react'; // Import useEffect and useState
 
 // This function creates the connection with Gemini
 export async function getGeminiSummary(promptText: string) {
@@ -53,7 +54,7 @@ export async function getGeminiSummary(promptText: string) {
   }
 }
 
-export default function HomeScreen() {
+export default function TabTwoScreen() {
   const [summary, setSummary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +63,7 @@ export default function HomeScreen() {
     setIsLoading(true);
     setError(null);
     // Below is the fixed prompt
-    const textToSummarize = "Using Google Search for grounding, identify key financial events of the past 24 hours and relevant companies. Respond in 200 words, employing clear, understandable technical terms. Say the general trend (up / down) that the stock is having. Include bullet points after the first half of the answer, and do not use italics or bolding.";
+    const textToSummarize = "Using Google Search for grounding, identify real IPOs released in the past week. Respond in 200 words, employing clear, understandable technical terms. Do not mention the google search, and assume I know that this should not be financial advice. Use bullet points, and DO NOT USE ITALICS OR BOLDING.";
     try {
       const result = await getGeminiSummary(textToSummarize);
       setSummary(result);
@@ -81,41 +82,41 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#FFFFFF', dark: '#141414' }}
+      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
-        <Image
-          source={require('@/assets/images/best-stock-photo.png')}
-          style={styles.reactLogo}
-          contentFit="cover"
+        <IconSymbol
+          size={310}
+          color="#808080"
+          name="chevron.left.forwardslash.chevron.right"
+          style={styles.headerImage}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Daily Summary of Recent Financial Events</ThemedText>
+        <ThemedText type="title">Weekly Summary of IPO Activity</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         {isLoading && <ThemedText>Loading...</ThemedText>}
         {error && <ThemedText style={{ color: 'red' }}>Error: {error}</ThemedText>}
         {summary && <ThemedText>{summary}</ThemedText>}
       </ThemedView>
+      
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
   stepContainer: {
     gap: 8,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: '100%',
-    bottom: 0,
-    left: 0,
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
     position: 'absolute',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    gap: 8,
   },
 });
