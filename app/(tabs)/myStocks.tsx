@@ -21,7 +21,7 @@ export async function getGeminiSummary(inputString: string) {
 
   // Use the input string in your prompt
   const promptText = `Give me a concise, plain-English summary of notable recent events relating to the stock or company: "${inputString}". 
-  Use bullet points, avoid financial advice, mention if the stock has been doing well lately, and keep it under 100 words. DO NOT USE ITALICS OR BOLDING.`;
+  Use bullet points, avoid financial advice, mention if the stock has been doing well lately, and keep it under 100 words. If the stock is not publically traded, explicitly mention that it isn't. Use the precise stock ticker in your response. DO NOT USE ITALICS OR BOLDING.`;
 
   try {
     const response = await fetch(API_URL, {

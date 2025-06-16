@@ -63,7 +63,7 @@ export default function TabTwoScreen() {
     setIsLoading(true);
     setError(null);
     // Below is the fixed prompt
-    const textToSummarize = "Using Google Search for grounding, identify real IPOs released in the past week. Respond in 200 words, employing clear, understandable technical terms. Do not mention the google search, and assume I know that this should not be financial advice. Use bullet points, and DO NOT USE ITALICS OR BOLDING.";
+    const textToSummarize = "Using Google Search for grounding, identify real IPOs released in the past week. Respond in 200 words, employing clear, understandable technical terms. Do not mention the google search, and assume I know that this should not be financial advice. Use bullet points. DO NOT USE ITALICS OR BOLDING.";
     try {
       const result = await getGeminiSummary(textToSummarize);
       setSummary(result);
