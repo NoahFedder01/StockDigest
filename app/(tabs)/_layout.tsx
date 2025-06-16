@@ -39,6 +39,12 @@ export default function TabLayout() {
           title: 'IPOs'
         }}
       />
+      <Tabs.Screen
+        name="myStocks"
+        options={{
+          title: 'My Stocks'
+        }}
+      />
     </Tabs>
   );
 }
