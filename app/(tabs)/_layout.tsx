@@ -34,15 +34,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="ipos"
-        options={{
-          title: 'IPOs'
-        }}
-      />
-      <Tabs.Screen
         name="myStocks"
         options={{
           title: 'My Stocks'
+        }}
+      />
+      <Tabs.Screen
+        name="ipos"
+        options={{
+          title: 'IPOs'
         }}
       />
     </Tabs>

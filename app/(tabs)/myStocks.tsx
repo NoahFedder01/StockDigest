@@ -89,7 +89,7 @@ function StockDetail({
         width: '100%'
     }}>
       <ThemedView style={{ flex: 1 }}>
-        <ThemedText>{detail}</ThemedText>
+        <ThemedText style={{ fontWeight: 'bold', fontSize: 24}}>{detail}</ThemedText>
         {loading && <ThemedText>Loading summary...</ThemedText>}
         {error && <ThemedText style={{ color: 'red' }}>{error}</ThemedText>}
         {summary && <ThemedText>{summary}</ThemedText>}
