@@ -1,0 +1,86 @@
+import React, { useState } from 'react';
+import { View, TextInput, TouchableOpacity, Text, Button } from 'react-native';
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+
+export default function SignUpScreen() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const router = useRouter();
+
+  const handleSignUp = async () => {
+    const res = await fetch('http://localhost:3001/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+
+    if (data.token) {
+      // 1. Save JWT token for persistent login
+      await SecureStore.setItemAsync('jwt', data.token);
+
+      // 2. Navigate to index.tsx (main app)
+      router.replace('/');
+
+      // 3. Optionally clear form/message
+      setUsername('');
+      setPassword('');
+      setMessage('');
+    } else {
+      setMessage(data.error || 'Sign up failed');
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+      <TextInput
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        style={{
+          borderWidth: 1,
+          borderColor: '#ccc',
+          padding: 10,
+          borderRadius: 6,
+          marginBottom: 12,
+        }}
+        autoCapitalize="none"
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={{
+          borderWidth: 1,
+          borderColor: '#ccc',
+          padding: 10,
+          borderRadius: 6,
+          marginBottom: 12,
+        }}
+      />
+      <TouchableOpacity
+        onPress={handleSignUp}
+        style={{
+          backgroundColor: '#007AFF',
+          paddingVertical: 14,
+          borderRadius: 8,
+          alignItems: 'center',
+          marginBottom: 12,
+        }}
+      >
+        <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Sign Up</Text>
+      </TouchableOpacity>
+      <Text>{message}</Text>
+      <View style={{ marginTop: 32 }}>
+        <Button
+          title="Already have an account? Log in"
+          onPress={() => router.push('/LoginScreen')}
+          color="#007AFF"
+        />
+      </View>
+    </View>
+  );
+}
