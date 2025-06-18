@@ -4,7 +4,6 @@ import React from 'react';
 import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -27,30 +26,44 @@ export default function TabLayout() {
           default: {},
         }),
         tabBarIcon: ({ color, size }) => {
+          if (route.name === 'myStocks') {
+            return <Ionicons name="bar-chart-outline" size={size} color={color} />;
+          }
+          if (route.name === 'ipos') {
+            return <Ionicons name="trending-up-outline" size={size} color={color} />;
+          }
           if (route.name === 'settings') {
             return <Ionicons name="settings-outline" size={size} color={color} />;
           }
-          // Add icons for other tabs as needed
+          if (route.name === 'index') {
+            return <Ionicons name="home-outline" size={size} color={color} />;
+          }
           return null;
         },
-      })}>
+      })}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="myStocks"
         options={{
-          title: 'My Stocks'
+          title: 'My Stocks',
         }}
       />
       <Tabs.Screen
         name="ipos"
         options={{
-          title: 'IPOs'
+          title: 'IPOs',
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
         }}
       />
     </Tabs>

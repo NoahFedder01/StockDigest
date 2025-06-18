@@ -92,7 +92,7 @@ export default function TabTwoScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Weekly Summary of IPO Activity</ThemedText>
+        <ThemedText type="title">Summary of Recent IPO Activity</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         {isLoading && <ThemedText>Loading...</ThemedText>}
