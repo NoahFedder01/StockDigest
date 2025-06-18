@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -13,7 +14,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
@@ -25,7 +26,14 @@ export default function TabLayout() {
           },
           default: {},
         }),
-      }}>
+        tabBarIcon: ({ color, size }) => {
+          if (route.name === 'settings') {
+            return <Ionicons name="settings-outline" size={size} color={color} />;
+          }
+          // Add icons for other tabs as needed
+          return null;
+        },
+      })}>
       <Tabs.Screen
         name="index"
         options={{

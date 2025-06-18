@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Button } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import React, { useState } from 'react';
+import { Button, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function SignUpScreen() {
+type SignUpScreenProps = {
+  setShowSignUp: (show: boolean) => void;
+};
+
+export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -77,7 +81,7 @@ export default function SignUpScreen() {
       <View style={{ marginTop: 32 }}>
         <Button
           title="Already have an account? Log in"
-          onPress={() => router.push('/LoginScreen')}
+          onPress={() => setShowSignUp(false)}
           color="#007AFF"
         />
       </View>

@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Button } from 'react-native';
-import { useRouter } from 'expo-router'; // If using Expo Router
+import { Button, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 
-export default function LoginScreen() {
+type LoginScreenProps = {
+  setShowSignUp: (show: boolean) => void;
+};
+
+export default function LoginScreen({ setShowSignUp }: LoginScreenProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const router = useRouter();
+  const { setIsSignedIn } = useAuth();
 
-  const handleLogin = async () => {
-    const res = await fetch('http://localhost:3001/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await res.json();
-    if (data.token) {
-      setMessage('Login successful!');
-      // Save token securely (e.g., with expo-secure-store)
-      // await SecureStore.setItemAsync('jwt', data.token);
-      // router.replace('/MainAppScreen'); // Uncomment and adjust as needed
+  const handleLogin = () => {
+    if (username && password) {
+      setIsSignedIn(true);
     } else {
-      setMessage(data.error);
+      setMessage('Please enter username and password');
     }
   };
 
@@ -66,15 +61,7 @@ export default function LoginScreen() {
         <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Log In</Text>
       </TouchableOpacity>
       <Text>{message}</Text>
-
-      {/* Button to go to Sign Up */}
-      <View style={{ marginTop: 32 }}>
-        <Button
-          title="Don't have an account? Sign up"
-          onPress={() => router.push('/SignUpScreen')}
-          color="#007AFF"
-        />
-      </View>
+      <Button title="Don't have an account? Sign up" onPress={() => setShowSignUp(true)} />
     </View>
   );
 }
