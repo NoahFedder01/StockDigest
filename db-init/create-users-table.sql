@@ -4,10 +4,10 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL
 );
 
--- Add a default user: username: testuser, password: testpass (hashed)
+-- Add a default user: username: a, password: a (hashed)
 INSERT INTO users (username, password_hash)
 VALUES (
-  'testuser',
-  '$2a$10$wH6QwQFQ9n8QwQwQwQwQwOeQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQwQw' -- bcrypt hash for 'testpass'
+  'a',
+  '$2a$12$JDfWu68SnAUkNRffwOZlN.0WyLqr0pzO9XRn/jmwAr7SQqND64r1K' -- bcrypt hash for 'a'
 )
 ON CONFLICT (username) DO NOTHING;
