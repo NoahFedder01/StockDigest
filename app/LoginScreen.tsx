@@ -1,22 +1,43 @@
 import React, { useState } from 'react';
 import { Button, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../context/AuthContext';
 
 type LoginScreenProps = {
+  setIsSignedIn: (signedIn: boolean) => void;
   setShowSignUp: (show: boolean) => void;
 };
 
-export default function LoginScreen({ setShowSignUp }: LoginScreenProps) {
+export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScreenProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const { setIsSignedIn } = useAuth();
 
-  const handleLogin = () => {
-    if (username && password) {
-      setIsSignedIn(true);
-    } else {
+  const handleLogin = async () => {
+    if (!username || !password) {
       setMessage('Please enter username and password');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (e) {
+        // If response is not JSON, data stays as {}
+      }
+
+      if (response.ok) {
+        setIsSignedIn(true);
+      } else {
+        setMessage((data as any).error || 'Login failed');
+      }
+    } catch (error) {
+      setMessage('Network error');
     }
   };
 

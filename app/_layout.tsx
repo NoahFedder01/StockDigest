@@ -15,7 +15,7 @@ function RootLayoutInner() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, setIsSignedIn } = useAuth(); // <-- add setIsSignedIn here
   const [showSignUp, setShowSignUp] = React.useState(false);
 
   if (!loaded) {
@@ -26,7 +26,7 @@ function RootLayoutInner() {
     return showSignUp ? (
       <SignUpScreen setShowSignUp={setShowSignUp} />
     ) : (
-      <LoginScreen setShowSignUp={setShowSignUp} />
+      <LoginScreen setIsSignedIn={setIsSignedIn} setShowSignUp={setShowSignUp} /> // <-- pass setIsSignedIn
     );
   }
 

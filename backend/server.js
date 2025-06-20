@@ -13,8 +13,19 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+// Debug: Log when server starts and environment variables
+console.log('Starting backend...');
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? '***set***' : '***NOT SET***');
+
+// Debug: Test endpoint
+app.get('/ping', (req, res) => {
+  res.send('pong');
+});
+
 // Sign up endpoint
 app.post('/signup', async (req, res) => {
+  console.log('Signup attempt:', req.body);
   const { username, password } = req.body;
   const hash = await bcrypt.hash(password, 12);
   try {
@@ -26,20 +37,34 @@ app.post('/signup', async (req, res) => {
     const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.status(201).json({ message: 'User created', token });
   } catch (e) {
+    console.error('Signup error:', e);
     res.status(400).json({ error: 'Username already exists' });
   }
 });
 
 // Log in endpoint
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-  const user = result.rows[0];
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-  const valid = await bcrypt.compare(password, user.password_hash);
-  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token });
+  console.log('Login attempt:', req.body);
+  try {
+    const { username, password } = req.body;
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    const user = result.rows[0];
+    if (!user) {
+      console.log('Login failed: user not found');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) {
+      console.log('Login failed: invalid password');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    console.log('Login successful for user:', username);
+    res.json({ token });
+  } catch (e) {
+    console.error('Login error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 app.listen(3001, () => console.log('API running on port 3001'));

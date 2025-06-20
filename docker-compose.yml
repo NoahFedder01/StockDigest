@@ -11,6 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
 
   backend:
     build:
@@ -21,7 +22,7 @@ services:
       - "3001:3001"
     environment:
       - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydb
-      - JWT_SECRET=your_jwt_secret
+      - JWT_SECRET=mySuperSecretKey1224!
     depends_on:
       - db
 
