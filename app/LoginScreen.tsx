@@ -1,10 +1,19 @@
+import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
-import { Button, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Button, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type LoginScreenProps = {
   setIsSignedIn: (signedIn: boolean) => void;
   setShowSignUp: (show: boolean) => void;
 };
+
+async function saveToken(token: string) {
+  if (Platform.OS === 'web') {
+    localStorage.setItem('token', token);
+  } else {
+    await SecureStore.setItemAsync('token', token);
+  }
+}
 
 export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScreenProps) {
   const [username, setUsername] = useState('');
@@ -24,17 +33,18 @@ export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScree
         body: JSON.stringify({ username, password }),
       });
 
-      let data = {};
+      let data: any = {};
       try {
         data = await response.json();
       } catch (e) {
         // If response is not JSON, data stays as {}
       }
 
-      if (response.ok) {
+      if (response.ok && data.token) {
+        await saveToken(data.token);
         setIsSignedIn(true);
       } else {
-        setMessage((data as any).error || 'Login failed');
+        setMessage(data.error || 'Login failed');
       }
     } catch (error) {
       setMessage('Network error');

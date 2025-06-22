@@ -1,11 +1,19 @@
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
-import { Button, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Button, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type SignUpScreenProps = {
   setShowSignUp: (show: boolean) => void;
 };
+
+async function saveToken(token: string) {
+  if (Platform.OS === 'web') {
+    localStorage.setItem('token', token);
+  } else {
+    await SecureStore.setItemAsync('token', token);
+  }
+}
 
 export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
   const [username, setUsername] = useState('');
@@ -22,13 +30,13 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
     const data = await res.json();
 
     if (data.token) {
-      // 1. Save JWT token for persistent login
-      await SecureStore.setItemAsync('jwt', data.token);
+      // Save JWT token for persistent login
+      await saveToken(data.token);
 
-      // 2. Navigate to index.tsx (main app)
+      // Navigate to index.tsx (main app)
       router.replace('/');
 
-      // 3. Optionally clear form/message
+      // Optionally clear form/message
       setUsername('');
       setPassword('');
       setMessage('');

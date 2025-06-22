@@ -67,4 +67,53 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Middleware to authenticate and get userId from JWT
+function authenticate(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth) return res.status(401).json({ error: 'No token' });
+  try {
+    const token = auth.split(' ')[1];
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = payload.userId;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+}
+
+// Get all stocks for the logged-in user
+app.get('/mystocks', authenticate, async (req, res) => {
+  const result = await pool.query(
+    'SELECT symbol FROM user_stocks WHERE user_id = $1',
+    [req.userId]
+  );
+  res.json({ stocks: result.rows.map(r => r.symbol) });
+});
+
+// Add a stock for the logged-in user
+app.post('/mystocks', authenticate, async (req, res) => {
+  const { symbol } = req.body;
+  if (!symbol) return res.status(400).json({ error: 'No symbol' });
+  try {
+    await pool.query(
+      'INSERT INTO user_stocks (user_id, symbol) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      [req.userId, symbol]
+    );
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Could not add stock' });
+  }
+});
+
+// Delete a stock for the logged-in user
+app.delete('/mystocks', authenticate, async (req, res) => {
+  const { symbol } = req.body;
+  if (!symbol) return res.status(400).json({ error: 'No symbol' });
+  await pool.query(
+    'DELETE FROM user_stocks WHERE user_id = $1 AND symbol = $2',
+    [req.userId, symbol]
+  );
+  res.json({ success: true });
+});
+
 app.listen(3001, () => console.log('API running on port 3001'));

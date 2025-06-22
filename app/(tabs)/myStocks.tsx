@@ -1,45 +1,18 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native'; // <-- Add TouchableOpacity
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import React, { useEffect, useState } from 'react';
+import { Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
-// This function creates the connection with Gemini
-export async function getGeminiSummary(inputString: string) {
-  const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error('Gemini API key not found');
-  }
-
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-  // Use the input string in your prompt
-  const promptText = `Give me a concise, plain-English summary of notable recent events relating to the stock or company: "${inputString}". 
-  Use bullet points, avoid financial advice, mention if the stock has been doing well lately, and keep it under 100 words. If the stock is not publically traded, explicitly mention that it isn't. Use the precise stock ticker in your response. DO NOT USE ITALICS OR BOLDING.`;
-
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }],
-      }),
-    });
-
-    const data = await response.json();
-
-    // Adjust this depending on Gemini's response structure
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No summary found.';
-  } catch (error) {
-    throw new Error('Failed to fetch summary');
+// Helper to get token from localStorage (web) or SecureStore (mobile)
+async function getToken() {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem('token');
+  } else {
+    // Use expo-secure-store or similar for mobile
+    const SecureStore = require('expo-secure-store');
+    return await SecureStore.getItemAsync('token');
   }
 }
 
@@ -63,9 +36,21 @@ function StockDetail({
       setLoading(true);
       setError(null);
       try {
-        // Pass the detail string as the query to Gemini
-        const result = await getGeminiSummary(detail);
-        if (isMounted) setSummary(result);
+        // Use your Gemini summary function here if desired
+        const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+        if (!apiKey) throw new Error('Gemini API key not found');
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const promptText = `Give me a concise, plain-English summary of notable recent events relating to the stock or company: "${detail}". 
+        Use bullet points, avoid financial advice, mention if the stock has been doing well lately, and keep it under 100 words. If the stock is not publically traded, explicitly mention that it isn't. Use the precise stock ticker in your response. DO NOT USE ITALICS OR BOLDING.`;
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }],
+          }),
+        });
+        const data = await response.json();
+        if (isMounted) setSummary(data.candidates?.[0]?.content?.parts?.[0]?.text || 'No summary found.');
       } catch (e: any) {
         if (isMounted) setError(e.message || 'Failed to fetch summary');
       } finally {
@@ -80,16 +65,17 @@ function StockDetail({
 
   return (
     <ThemedView
-        style={{ padding: 8,
+      style={{
+        padding: 8,
         backgroundColor: '#fff',
         marginTop: 16,
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '100%'
-    }}>
+        width: '100%',
+      }}>
       <ThemedView style={{ flex: 1 }}>
-        <ThemedText style={{ fontWeight: 'bold', fontSize: 24}}>{detail}</ThemedText>
+        <ThemedText style={{ fontWeight: 'bold', fontSize: 24 }}>{detail}</ThemedText>
         {loading && <ThemedText>Loading summary...</ThemedText>}
         {error && <ThemedText style={{ color: 'red' }}>{error}</ThemedText>}
         {summary && <ThemedText>{summary}</ThemedText>}
@@ -111,46 +97,94 @@ function StockDetail({
 }
 
 export default function TabTwoScreen() {
-  const [summary, setSummary] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
   const [input, setInput] = useState('');
   const [details, setDetails] = useState<{ id: string; detail: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchSummary = async () => {
-    setIsLoading(true);
+  // Fetch stocks from backend on mount
+  useEffect(() => {
+    const fetchStocks = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = await getToken();
+        const response = await fetch('http://localhost:3001/mystocks', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) throw new Error('Failed to fetch stocks');
+        const data = await response.json();
+        setDetails(
+          data.stocks.map((symbol: string) => ({
+            id: symbol,
+            detail: symbol,
+          }))
+        );
+      } catch (e: any) {
+        setError(e.message || 'Failed to load stocks');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStocks();
+  }, []);
+
+  // Add a new stock to backend and UI
+  const handleAddDetail = async () => {
+    if (input.trim() === '') return;
+    setLoading(true);
     setError(null);
-    // Below is the fixed prompt
-    const textToSummarize = "Using Google Search for grounding, identify real IPOs released in the past week. Respond in 200 words, employing clear, understandable technical terms. Do not mention the google search, and assume I know that this should not be financial advice. Use bullet points, and DO NOT USE ITALICS OR BOLDING.";
     try {
-      const result = await getGeminiSummary(textToSummarize);
-      setSummary(result);
+      const token = await getToken();
+      console.log('Token being sent:', token);
+      const response = await fetch('http://localhost:3001/mystocks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ symbol: input }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add stock');
+      }
+      setDetails((prev) => [
+        ...prev,
+        { id: input, detail: input },
+      ]);
+      setInput('');
     } catch (e: any) {
-      setError(e.message || "Failed to fetch summary");
-      console.error(e);
+      setError(e.message || 'Failed to add stock');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchSummary();
-  }, []);
-
-  // Add a new detail
-  const handleAddDetail = () => {
-    if (input.trim() === '') return;
-    setDetails((prev) => [
-      ...prev,
-      { id: Date.now().toString() + Math.random().toString(36).slice(2), detail: input },
-    ]);
-    setInput('');
-  };
-
-  // Delete a detail by id
-  const handleDeleteDetail = (id: string) => {
-    setDetails((prev) => prev.filter((item) => item.id !== id));
+  // Delete a stock from backend and UI
+  const handleDeleteDetail = async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      const response = await fetch('http://localhost:3001/mystocks', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ symbol: id }),
+      });
+      if (!response.ok) throw new Error('Failed to remove stock');
+      setDetails((prev) => prev.filter((item) => item.id !== id));
+    } catch (e: any) {
+      setError(e.message || 'Failed to remove stock');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -195,6 +229,8 @@ export default function TabTwoScreen() {
             Add Stock To Watchlist
           </ThemedText>
         </TouchableOpacity>
+        {loading && <ThemedText>Loading...</ThemedText>}
+        {error && <ThemedText style={{ color: 'red' }}>{error}</ThemedText>}
         {details.map((item) => (
           <StockDetail
             key={item.id}
@@ -209,10 +245,6 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
   headerImage: {
     color: '#808080',
     bottom: -90,
