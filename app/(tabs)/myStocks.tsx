@@ -1,7 +1,10 @@
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
@@ -10,7 +13,6 @@ async function getToken() {
   if (Platform.OS === 'web') {
     return localStorage.getItem('token');
   } else {
-    // Use expo-secure-store or similar for mobile
     const SecureStore = require('expo-secure-store');
     return await SecureStore.getItemAsync('token');
   }
@@ -36,7 +38,6 @@ function StockDetail({
       setLoading(true);
       setError(null);
       try {
-        // Use your Gemini summary function here if desired
         const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
         if (!apiKey) throw new Error('Gemini API key not found');
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -101,6 +102,8 @@ export default function TabTwoScreen() {
   const [details, setDetails] = useState<{ id: string; detail: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const colorScheme = useColorScheme();
+  const iconColor = Colors[colorScheme ?? 'light'].tint;
 
   // Fetch stocks from backend on mount
   useEffect(() => {
@@ -191,12 +194,7 @@ export default function TabTwoScreen() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
+        <Ionicons name="bar-chart-outline" size={250} color={iconColor} />
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Stocks You Are Watching</ThemedText>

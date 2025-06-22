@@ -1,12 +1,11 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet } from 'react-native';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import React, { useEffect, useState } from 'react'; // Import useEffect and useState
 
 // This function creates the connection with Gemini
@@ -59,6 +58,9 @@ export default function TabTwoScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const colorScheme = useColorScheme();
+  const iconColor = Colors[colorScheme ?? 'light'].tint;
+
   const fetchSummary = async () => {
     setIsLoading(true);
     setError(null);
@@ -84,12 +86,7 @@ export default function TabTwoScreen() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
+        <Ionicons name="trending-up-outline" size={310} color={iconColor} />
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Summary of Recent IPO Activity</ThemedText>
