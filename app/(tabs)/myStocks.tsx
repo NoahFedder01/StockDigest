@@ -143,7 +143,7 @@ export default function TabTwoScreen() {
     setError(null);
     try {
       const token = await getToken();
-      console.log('Token being sent:', token);
+      // console.log('Token being sent:', token);
       const response = await fetch('http://localhost:3001/mystocks', {
         method: 'POST',
         headers: {
