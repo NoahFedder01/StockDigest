@@ -110,7 +110,7 @@ export default function TabTwoScreen() {
       setError(null);
       try {
         const token = await getToken();
-        const response = await fetch('http://localhost:3001/mystocks', {
+        const response = await fetch('http://192.168.0.21:3001/mystocks', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ export default function TabTwoScreen() {
     setError(null);
     try {
       const token = await getToken();
-      const response = await fetch('http://localhost:3001/mystocks', {
+      const response = await fetch('http://192.168.0.21:3001/mystocks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export default function TabTwoScreen() {
     setError(null);
     try {
       const token = await getToken();
-      const response = await fetch('http://localhost:3001/mystocks', {
+      const response = await fetch('http://192.168.0.21:3001/mystocks', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +191,12 @@ export default function TabTwoScreen() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
-        <Ionicons name="bar-chart-outline" size={250} color={iconColor} />
+        <Ionicons
+          name="bar-chart-outline"
+          size={230}
+          color={iconColor}
+          style={{ marginTop: 15 }} // <-- Add this line to push the icon down
+        />
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Stocks You Are Watching</ThemedText>
