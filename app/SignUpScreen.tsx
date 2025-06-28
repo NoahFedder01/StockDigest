@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
-import { Button, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Button, Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type SignUpScreenProps = {
   setShowSignUp: (show: boolean) => void;
@@ -46,7 +46,8 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+    <View style={{ flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <TextInput
         placeholder="Username"
         value={username}
@@ -57,8 +58,11 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
           padding: 10,
           borderRadius: 6,
           marginBottom: 12,
+          backgroundColor: '#fff',
+          color: '#000',
         }}
         autoCapitalize="none"
+        placeholderTextColor="#888"
       />
       <TextInput
         placeholder="Password"
@@ -71,7 +75,10 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
           padding: 10,
           borderRadius: 6,
           marginBottom: 12,
+          backgroundColor: '#fff',
+          color: '#000',
         }}
+        placeholderTextColor="#888"
       />
       <TouchableOpacity
         onPress={handleSignUp}
@@ -85,7 +92,7 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
       >
         <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Sign Up</Text>
       </TouchableOpacity>
-      <Text>{message}</Text>
+      <Text style={{ color: '#000' }}>{message}</Text>
       <View style={{ marginTop: 32 }}>
         <Button
           title="Already have an account? Log in"

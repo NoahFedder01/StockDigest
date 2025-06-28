@@ -1,10 +1,8 @@
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
@@ -102,8 +100,8 @@ export default function TabTwoScreen() {
   const [details, setDetails] = useState<{ id: string; detail: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const colorScheme = useColorScheme();
-  const iconColor = Colors[colorScheme ?? 'light'].tint;
+  // Always use light mode
+  const iconColor = Colors.light.tint;
 
   // Fetch stocks from backend on mount
   useEffect(() => {
@@ -143,7 +141,6 @@ export default function TabTwoScreen() {
     setError(null);
     try {
       const token = await getToken();
-      // console.log('Token being sent:', token);
       const response = await fetch('http://localhost:3001/mystocks', {
         method: 'POST',
         headers: {

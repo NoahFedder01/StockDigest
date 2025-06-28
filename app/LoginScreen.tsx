@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
-import { Button, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Button, Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type LoginScreenProps = {
   setIsSignedIn: (signedIn: boolean) => void;
@@ -52,7 +52,8 @@ export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScree
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+    <View style={{ flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <TextInput
         placeholder="Username"
         value={username}
@@ -63,8 +64,11 @@ export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScree
           padding: 10,
           borderRadius: 6,
           marginBottom: 12,
+          backgroundColor: '#fff',
+          color: '#000',
         }}
         autoCapitalize="none"
+        placeholderTextColor="#888"
       />
       <TextInput
         placeholder="Password"
@@ -77,7 +81,10 @@ export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScree
           padding: 10,
           borderRadius: 6,
           marginBottom: 12,
+          backgroundColor: '#fff',
+          color: '#000',
         }}
+        placeholderTextColor="#888"
       />
       <TouchableOpacity
         onPress={handleLogin}
@@ -91,7 +98,7 @@ export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScree
       >
         <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Log In</Text>
       </TouchableOpacity>
-      <Text>{message}</Text>
+      <Text style={{ color: '#000' }}>{message}</Text>
       <Button title="Don't have an account? Sign up" onPress={() => setShowSignUp(true)} />
     </View>
   );

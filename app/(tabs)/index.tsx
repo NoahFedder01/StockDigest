@@ -1,20 +1,16 @@
 import { Image } from 'expo-image';
-import { Dimensions, Platform, StyleSheet, Button } from 'react-native';
-import React, { useEffect, useState } from 'react'; // Import useEffect and useState
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Collapsible } from '@/components/Collapsible';
 
-// This function creates the connection with Gemini
 export async function getGeminiSummary(promptText: string) {
   const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
   if (!apiKey) {
     console.error("Gemini API key is not defined. Make sure EXPO_PUBLIC_GEMINI_API_KEY is set in your .env file.");
-    // Handle the error appropriately, maybe return or throw
     return null;
   }
 
@@ -38,8 +34,6 @@ export async function getGeminiSummary(promptText: string) {
     }
 
     const data = await response.json();
-    // Assuming the summary is in data.candidates[0].content.parts[0].text
-    // The actual path might vary based on the Gemini API response structure
     if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
       return data.candidates[0].content.parts[0].text;
     } else {
@@ -48,7 +42,6 @@ export async function getGeminiSummary(promptText: string) {
     }
   } catch (error) {
     console.error('Failed to fetch summary from Gemini:', error);
-    // Handle the error appropriately
     return null;
   }
 }
@@ -61,7 +54,6 @@ export default function HomeScreen() {
   const fetchSummary = async () => {
     setIsLoading(true);
     setError(null);
-    // Below is the fixed prompt
     const textToSummarize = "Using Google Search for grounding, identify key financial events of the past 24 hours and relevant companies. Respond in 200 words, employing clear, understandable technical terms. Say the general trend (up / down) that the stock is having. Include bullet points after the first half of the answer, and do not use italics or bolding.";
     try {
       const result = await getGeminiSummary(textToSummarize);
@@ -75,9 +67,8 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    // Fetch the summary when the component mounts
     fetchSummary();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   return (
     <ParallaxScrollView
