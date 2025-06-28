@@ -22,7 +22,7 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
   const router = useRouter();
 
   const handleSignUp = async () => {
-    const res = await fetch('http://localhost:3001/signup', {
+    const res = await fetch('http://192.168.0.21:3001/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
