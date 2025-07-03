@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
 import { Button, Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { API_BASE_URL } from '../config/apiConfig'; // <-- updated import
 
 type SignUpScreenProps = {
   setShowSignUp: (show: boolean) => void;
@@ -22,7 +23,7 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
   const router = useRouter();
 
   const handleSignUp = async () => {
-    const res = await fetch('http://192.168.0.21:3001/signup', {
+    const res = await fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -93,7 +94,7 @@ export default function SignUpScreen({ setShowSignUp }: SignUpScreenProps) {
         <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Sign Up</Text>
       </TouchableOpacity>
       <Text style={{ color: '#000' }}>{message}</Text>
-      <View style={{ marginTop: 32 }}>
+      <View>
         <Button
           title="Already have an account? Log in"
           onPress={() => setShowSignUp(false)}

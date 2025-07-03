@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { API_BASE_URL } from '../../config/apiConfig'; // <-- updated import
 
 // Helper to get token from localStorage (web) or SecureStore (mobile)
 async function getToken() {
@@ -110,7 +111,7 @@ export default function TabTwoScreen() {
       setError(null);
       try {
         const token = await getToken();
-        const response = await fetch('http://192.168.0.21:3001/mystocks', {
+        const response = await fetch(`${API_BASE_URL}/mystocks`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -141,7 +142,7 @@ export default function TabTwoScreen() {
     setError(null);
     try {
       const token = await getToken();
-      const response = await fetch('http://192.168.0.21:3001/mystocks', {
+      const response = await fetch(`${API_BASE_URL}/mystocks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +171,7 @@ export default function TabTwoScreen() {
     setError(null);
     try {
       const token = await getToken();
-      const response = await fetch('http://192.168.0.21:3001/mystocks', {
+      const response = await fetch(`${API_BASE_URL}/mystocks`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

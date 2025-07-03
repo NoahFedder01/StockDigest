@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useState } from 'react';
 import { Button, Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { API_BASE_URL } from '../config/apiConfig'; // <-- updated import
 
 type LoginScreenProps = {
   setIsSignedIn: (signedIn: boolean) => void;
@@ -27,7 +28,7 @@ export default function LoginScreen({ setIsSignedIn, setShowSignUp }: LoginScree
     }
 
     try {
-      const response = await fetch('http://192.168.0.21:3001/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
